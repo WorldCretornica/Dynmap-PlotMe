@@ -68,7 +68,7 @@
 		<dependency>
 			<groupId>com.worldcretornica</groupId>
 			<artifactId>PlotMe-Core</artifactId>
-            <version>0.15.2</version>
+            <version>0.16-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
