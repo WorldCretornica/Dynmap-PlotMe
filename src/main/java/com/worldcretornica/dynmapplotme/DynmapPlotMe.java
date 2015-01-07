@@ -96,7 +96,7 @@ public class DynmapPlotMe extends JavaPlugin {
         try {
             sc = Integer.parseInt(as.strokecolor.substring(1), 16);
             fc = Integer.parseInt(as.fillcolor.substring(1), 16);
-        } catch (NumberFormatException nfx) {
+        } catch (NumberFormatException ignored) {
         }
         m.setLineStyle(as.strokeweight, as.strokeopacity, sc);
         m.setFillStyle(as.fillopacity, fc);
