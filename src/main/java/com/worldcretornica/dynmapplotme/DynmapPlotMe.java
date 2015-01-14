@@ -3,7 +3,7 @@ package com.worldcretornica.dynmapplotme;
 import com.worldcretornica.plotme_core.Plot;
 import com.worldcretornica.plotme_core.PlotMeCoreManager;
 import com.worldcretornica.plotme_core.PlotMe_Core;
-import com.worldcretornica.plotme_core.api.ILocation;
+import com.worldcretornica.plotme_core.api.Location;
 import com.worldcretornica.plotme_core.api.World;
 import com.worldcretornica.plotme_core.bukkit.PlotMe_CorePlugin;
 import org.bukkit.configuration.ConfigurationSection;
@@ -20,7 +20,11 @@ import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class DynmapPlotMe extends JavaPlugin {
     private static final String DEF_INFOWINDOW = "<div class=\"infowindow\"><span style=\"font-size:120%;\">ID : %plotid%</span><br />" +
@@ -117,8 +121,8 @@ public class DynmapPlotMe extends JavaPlugin {
         /* Handle areas */
         if (isVisible(name, world.getName())) {
 
-            ILocation bottom = PlotMeCoreManager.getPlotBottomLoc(world, name);
-            ILocation top = PlotMeCoreManager.getPlotTopLoc(world, name);
+            Location bottom = PlotMeCoreManager.getPlotBottomLoc(world, name);
+            Location top = PlotMeCoreManager.getPlotTopLoc(world, name);
 
             /* Make outline */
             double[] x = new double[4];
