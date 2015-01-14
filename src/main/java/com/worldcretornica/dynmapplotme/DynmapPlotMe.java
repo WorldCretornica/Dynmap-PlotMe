@@ -3,7 +3,7 @@ package com.worldcretornica.dynmapplotme;
 import com.worldcretornica.plotme_core.Plot;
 import com.worldcretornica.plotme_core.PlotMeCoreManager;
 import com.worldcretornica.plotme_core.PlotMe_Core;
-import com.worldcretornica.plotme_core.api.Location;
+import com.worldcretornica.plotme_core.api.ILocation;
 import com.worldcretornica.plotme_core.api.World;
 import com.worldcretornica.plotme_core.bukkit.PlotMe_CorePlugin;
 import org.bukkit.configuration.ConfigurationSection;
@@ -121,8 +121,8 @@ public class DynmapPlotMe extends JavaPlugin {
         /* Handle areas */
         if (isVisible(name, world.getName())) {
 
-            Location bottom = PlotMeCoreManager.getPlotBottomLoc(world, name);
-            Location top = PlotMeCoreManager.getPlotTopLoc(world, name);
+            ILocation bottom = PlotMeCoreManager.getPlotBottomLoc(world, name);
+            ILocation top = PlotMeCoreManager.getPlotTopLoc(world, name);
 
             /* Make outline */
             double[] x = new double[4];
