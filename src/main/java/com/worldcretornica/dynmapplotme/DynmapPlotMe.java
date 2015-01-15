@@ -4,7 +4,7 @@ import com.worldcretornica.plotme_core.Plot;
 import com.worldcretornica.plotme_core.PlotMeCoreManager;
 import com.worldcretornica.plotme_core.PlotMe_Core;
 import com.worldcretornica.plotme_core.api.ILocation;
-import com.worldcretornica.plotme_core.api.World;
+import com.worldcretornica.plotme_core.api.IWorld;
 import com.worldcretornica.plotme_core.bukkit.PlotMe_CorePlugin;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -115,7 +115,7 @@ public class DynmapPlotMe extends JavaPlugin {
      * @param plot
      * @param newmap
      */
-    private void handlePlot(World world, Plot plot, Map<String, AreaMarker> newmap) {
+    private void handlePlot(IWorld world, Plot plot, Map<String, AreaMarker> newmap) {
         String name = plot.getId();
 
         /* Handle areas */
@@ -166,7 +166,7 @@ public class DynmapPlotMe extends JavaPlugin {
         Map<String, AreaMarker> newmap = new HashMap<>(); /* Build new map */
 
         /* Loop through worlds */
-        for (World world : plotmeAPI.getServerBridge().getWorlds()) {
+        for (IWorld world : plotmeAPI.getServerBridge().getWorlds()) {
             if (plotmeAPI.getPlotMeCoreManager().isPlotWorld(world)) {
                 HashMap<String, Plot> plots = plotmeAPI.getSqlManager().getPlots(world.getName().toLowerCase());
 
