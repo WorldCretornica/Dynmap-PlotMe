@@ -27,8 +27,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class DynmapPlotMe extends JavaPlugin {
+
     private static final String DEF_INFOWINDOW = "<div class=\"infowindow\"><span style=\"font-size:120%;\">ID : %plotid%</span><br />" +
-                                                         " Owner <span style=\"font-weight:bold;\">%plotowners%</span>%plothelpers%";
+                                                 " Owner <span style=\"font-weight:bold;\">%plotowners%</span>%plothelpers%";
     private static MarkerSet set;
     public PlotMe_CorePlugin plotme;
     public MarkerAPI markerapi;
@@ -61,13 +62,14 @@ public class DynmapPlotMe extends JavaPlugin {
     private boolean isVisible(String id, String worldname) {
         if ((visible != null) && (!visible.isEmpty())) {
             if ((!visible.contains(id)) && (!visible.contains("world:" + worldname)) &&
-                        (!visible.contains(worldname + "/" + id))) {
+                (!visible.contains(worldname + "/" + id))) {
                 return false;
             }
         }
         if ((hidden != null) && (!hidden.isEmpty())) {
-            if (hidden.contains(id) || hidden.contains("world:" + worldname) || hidden.contains(worldname + "/" + id))
+            if (hidden.contains(id) || hidden.contains("world:" + worldname) || hidden.contains(worldname + "/" + id)) {
                 return false;
+            }
         }
         return true;
     }
@@ -80,10 +82,11 @@ public class DynmapPlotMe extends JavaPlugin {
         if (as == null) {    /* Check for wildcard style matches */
             for (String wc : cuswildstyle.keySet()) {
                 String[] tok = wc.split("\\|");
-                if ((tok.length == 1) && plotid.startsWith(tok[0]))
+                if ((tok.length == 1) && plotid.startsWith(tok[0])) {
                     as = cuswildstyle.get(wc);
-                else if ((tok.length >= 2) && plotid.startsWith(tok[0]) && plotid.endsWith(tok[1]))
+                } else if ((tok.length >= 2) && plotid.startsWith(tok[0]) && plotid.endsWith(tok[1])) {
                     as = cuswildstyle.get(wc);
+                }
             }
         }
         if (as == null) {    /* Check for owner style matches */
@@ -92,8 +95,9 @@ public class DynmapPlotMe extends JavaPlugin {
                 as = ownerstyle.get(owner.toLowerCase());
             }
         }
-        if (as == null)
+        if (as == null) {
             as = defstyle;
+        }
 
         int sc = 0xFF0000;
         int fc = 0xFF0000;
@@ -136,13 +140,13 @@ public class DynmapPlotMe extends JavaPlugin {
             x[3] = top.getX() + 2.0;
             z[3] = bottom.getZ() - 2.0;
 
-
             String markerid = world.getName() + "_" + name;
             AreaMarker m = resareas.remove(markerid); /* Existing area? */
             if (m == null) {
                 m = set.createAreaMarker(markerid, name, false, world.getName(), x, z, false);
-                if (m == null)
+                if (m == null) {
                     return;
+                }
             } else {
                 m.setCornerLocations(x, z); /* Replace corner locations */
                 m.setLabel(name);   /* Update label */
@@ -228,17 +232,19 @@ public class DynmapPlotMe extends JavaPlugin {
 
         /* Now, add marker set for mobs (make it transient) */
         set = markerapi.getMarkerSet("plotme.markerset");
-        if (set == null)
+        if (set == null) {
             set = markerapi.createMarkerSet("plotme.markerset", cfg.getString("layer.name", "PlotMe"), null, false);
-        else
+        } else {
             set.setMarkerSetLabel(cfg.getString("layer.name", "PlotMe"));
+        }
         if (set == null) {
             getLogger().severe("Error creating marker set");
             return;
         }
         int minzoom = cfg.getInt("layer.minzoom", 0);
-        if (minzoom > 0)
+        if (minzoom > 0) {
             set.setMinZoom(minzoom);
+        }
         set.setLayerPriority(cfg.getInt("layer.layerprio", 10));
         set.setHideByDefault(cfg.getBoolean("layer.hidebydefault", false));
         infowindow = cfg.getString("infowindow", DEF_INFOWINDOW);
@@ -253,10 +259,11 @@ public class DynmapPlotMe extends JavaPlugin {
             Set<String> ids = sect.getKeys(false);
 
             for (String id : ids) {
-                if (id.indexOf('|') >= 0)
+                if (id.indexOf('|') >= 0) {
                     cuswildstyle.put(id, new AreaStyle(cfg, "custstyle." + id, defstyle));
-                else
+                } else {
                     cusstyle.put(id, new AreaStyle(cfg, "custstyle." + id, defstyle));
+                }
             }
         }
         sect = cfg.getConfigurationSection("ownerstyle");
@@ -278,7 +285,9 @@ public class DynmapPlotMe extends JavaPlugin {
 
         /* Set up update job - based on periond */
         int per = cfg.getInt("update.period", 60);
-        if (per < 15) per = 15;
+        if (per < 15) {
+            per = 15;
+        }
         updperiod = (long) (per * 20);
         stop = false;
 
@@ -286,6 +295,7 @@ public class DynmapPlotMe extends JavaPlugin {
     }
 
     private static class AreaStyle {
+
         String strokecolor;
         double strokeopacity;
         int strokeweight;
@@ -312,21 +322,25 @@ public class DynmapPlotMe extends JavaPlugin {
     }
 
     private class PlotMeUpdate implements Runnable {
+
         @Override
         public void run() {
-            if (!stop)
+            if (!stop) {
                 updatePlots();
+            }
         }
     }
 
     private class OurServerListener implements Listener {
+
         @EventHandler(priority = EventPriority.MONITOR)
         public void onPluginEnable(PluginEnableEvent event) {
             Plugin plugin = event.getPlugin();
             String name = plugin.getDescription().getName();
             if ("dynmap".equals(name)) {
-                if (dynmap.isEnabled() && plotme.isEnabled())
+                if (dynmap.isEnabled() && plotme.isEnabled()) {
                     activate();
+                }
             }
         }
     }
