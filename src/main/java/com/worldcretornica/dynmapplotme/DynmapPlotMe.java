@@ -32,15 +32,15 @@ public class DynmapPlotMe extends JavaPlugin {
                                                  " Owner <span style=\"font-weight:bold;\">%plotowners%</span>%plothelpers%";
     private static MarkerSet set;
     public PlotMe_CorePlugin plotme;
-    public MarkerAPI markerapi;
+    public MarkerAPI markerAPI;
     public Plugin dynmap;
     public DynmapAPI api;
     private long updperiod;
-    private String infowindow;
+    private String infoWindow;
     private AreaStyle defstyle;
     private Map<String, AreaStyle> cusstyle;
     private Map<String, AreaStyle> cuswildstyle;
-    private Map<String, AreaStyle> ownerstyle;
+    private Map<String, AreaStyle> ownerStyle;
     private Set<String> visible;
     private Set<String> hidden;
     private boolean stop;
@@ -48,7 +48,7 @@ public class DynmapPlotMe extends JavaPlugin {
     private PlotMe_Core plotmeAPI;
 
     private String formatInfoWindow(Plot plot) {
-        String v = "<div class=\"plotinfo\">" + infowindow + "</div>";
+        String v = "<div class=\"plotinfo\">" + infoWindow + "</div>";
         v = v.replace("%plotid%", plot.getId());
         v = v.replace("%plotowners%", plot.getOwner());
         if (plot.getAllowed().isEmpty()) {
@@ -90,9 +90,9 @@ public class DynmapPlotMe extends JavaPlugin {
             }
         }
         if (as == null) {    /* Check for owner style matches */
-            if (!ownerstyle.isEmpty()) {
+            if (!ownerStyle.isEmpty()) {
                 String owner = plot.getOwner();
-                as = ownerstyle.get(owner.toLowerCase());
+                as = ownerStyle.get(owner.toLowerCase());
             }
         }
         if (as == null) {
@@ -220,8 +220,8 @@ public class DynmapPlotMe extends JavaPlugin {
     public void activate() {
 
         /* Now, get markers API */
-        markerapi = api.getMarkerAPI();
-        if (markerapi == null) {
+        markerAPI = api.getMarkerAPI();
+        if (markerAPI == null) {
             getLogger().severe("Error loading dynmap marker API!");
             return;
         }
@@ -231,9 +231,9 @@ public class DynmapPlotMe extends JavaPlugin {
         saveConfig();  /* Save updates, if needed */
 
         /* Now, add marker set for mobs (make it transient) */
-        set = markerapi.getMarkerSet("plotme.markerset");
+        set = markerAPI.getMarkerSet("plotme.markerset");
         if (set == null) {
-            set = markerapi.createMarkerSet("plotme.markerset", cfg.getString("layer.name", "PlotMe"), null, false);
+            set = markerAPI.createMarkerSet("plotme.markerset", cfg.getString("layer.name", "PlotMe"), null, false);
         } else {
             set.setMarkerSetLabel(cfg.getString("layer.name", "PlotMe"));
         }
@@ -247,12 +247,12 @@ public class DynmapPlotMe extends JavaPlugin {
         }
         set.setLayerPriority(cfg.getInt("layer.layerprio", 10));
         set.setHideByDefault(cfg.getBoolean("layer.hidebydefault", false));
-        infowindow = cfg.getString("infowindow", DEF_INFOWINDOW);
+        infoWindow = cfg.getString("infowindow", DEF_INFOWINDOW);
 
         /* Get style information */
         defstyle = new AreaStyle(cfg, "plotstyle");
         cusstyle = new HashMap<>();
-        ownerstyle = new HashMap<>();
+        ownerStyle = new HashMap<>();
         cuswildstyle = new HashMap<>();
         ConfigurationSection sect = cfg.getConfigurationSection("custstyle");
         if (sect != null) {
@@ -271,7 +271,7 @@ public class DynmapPlotMe extends JavaPlugin {
             Set<String> ids = sect.getKeys(false);
 
             for (String id : ids) {
-                ownerstyle.put(id.toLowerCase(), new AreaStyle(cfg, "ownerstyle." + id, defstyle));
+                ownerStyle.put(id.toLowerCase(), new AreaStyle(cfg, "ownerstyle." + id, defstyle));
             }
         }
         List<String> vis = cfg.getStringList("visibleplots");

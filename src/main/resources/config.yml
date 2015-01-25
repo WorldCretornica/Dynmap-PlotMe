@@ -29,11 +29,11 @@ plotstyle:
   fillOpacity: 0.01
   
 # Optional setting to limit which plots to show, by id - if commented out, all regions are shown
-# To show all plots on a given world, add 'world:<worldname>' to the list
+# To show all plots on a given world, add 'world:<worldName>' to the list
 visibleregions: [ ]
   
 # Optional setting to hide specific plots, by id
-# To hide all plots on a given world, add 'world:<worldname>' to the list
+# To hide all plots on a given world, add 'world:<worldName>' to the list
 hiddenregions: [ ]
   
 # Optional per-plot overrides for plotstyle (any defined replace those in plotstyle)
