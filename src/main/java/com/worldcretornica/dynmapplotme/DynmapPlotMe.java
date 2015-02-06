@@ -218,7 +218,7 @@ public class DynmapPlotMe extends JavaPlugin {
         }
         api = (DynmapAPI) dynmap; /* Get API */
         /* Get WorldGuard */
-        Plugin p = pm.getPlugin("PlotMe-Core");
+        Plugin p = pm.getPlugin("PlotMe");
         if (p == null) {
             severe("Cannot find PlotMe-Core!");
             return;

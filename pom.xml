@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.worldcretornica</groupId>
     <artifactId>Dynmap-PlotMe</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <packaging>jar</packaging>
 
     <name>Dynmap-PlotMe</name>
@@ -69,7 +69,7 @@
         <dependency>
             <groupId>com.worldcretornica</groupId>
             <artifactId>PlotMe-Core</artifactId>
-            <version>0.16-SNAPSHOT</version>
+            <version>0.16.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
