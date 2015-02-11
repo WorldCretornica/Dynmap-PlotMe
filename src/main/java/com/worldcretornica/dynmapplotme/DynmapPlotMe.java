@@ -1,27 +1,29 @@
 package com.worldcretornica.dynmapplotme;
 
 import com.worldcretornica.plotme_core.Plot;
+import com.worldcretornica.plotme_core.PlotId;
 import com.worldcretornica.plotme_core.PlotMeCoreManager;
-import com.worldcretornica.plotme_core.bukkit.*;
-import com.worldcretornica.plotme_core.bukkit.api.*;
-import com.worldcretornica.plotme_core.bukkit.event.*;
-import org.bukkit.*;
-import org.bukkit.configuration.*;
-import org.bukkit.configuration.file.*;
-import org.bukkit.event.*;
-import org.bukkit.event.server.*;
-import org.bukkit.plugin.*;
-import org.bukkit.plugin.java.*;
+import com.worldcretornica.plotme_core.bukkit.PlotMe_CorePlugin;
+import com.worldcretornica.plotme_core.bukkit.api.BukkitLocation;
+import com.worldcretornica.plotme_core.bukkit.api.BukkitWorld;
+import com.worldcretornica.plotme_core.bukkit.event.PlotEvent;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.dynmap.DynmapAPI;
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DynmapPlotMe extends JavaPlugin {
@@ -55,7 +57,7 @@ public class DynmapPlotMe extends JavaPlugin {
 
     private String formatInfoWindow(Plot plot) {
         String v = "<div class=\"plotinfo\">" + infowindow + "</div>";
-        v = v.replace("%plotid%", plot.getId());
+        v = v.replace("%plotid%", plot.getId().toString());
         v = v.replace("%plotowners%", plot.getOwner());
         if (plot.getAllowed().equalsIgnoreCase("")) {
             v = v.replace("%plothelpers%", "");
@@ -126,10 +128,10 @@ public class DynmapPlotMe extends JavaPlugin {
      * @param newmap
      */
     private void handlePlot(World world, Plot plot, Map<String, AreaMarker> newmap) {
-        String name = plot.getId();
+        PlotId name = plot.getId();
 
         /* Handle areas */
-        if (isVisible(name, world.getName())) {
+        if (isVisible(name.toString(), world.getName())) {
 
             PlotMeCoreManager manager = PlotMeCoreManager.getInstance();
             Location bottom = ((BukkitLocation) manager.getPlotBottomLoc(new BukkitWorld(world), name)).getLocation();
@@ -155,19 +157,19 @@ public class DynmapPlotMe extends JavaPlugin {
             String markerid = world.getName() + "_" + name;
             AreaMarker m = resareas.remove(markerid); /* Existing area? */
             if (m == null) {
-                m = set.createAreaMarker(markerid, name, false, world.getName(), x, z, false);
+                m = set.createAreaMarker(markerid, name.toString(), false, world.getName(), x, z, false);
                 if (m == null) {
                     return;
                 }
             } else {
                 m.setCornerLocations(x, z); /* Replace corner locations */
-                m.setLabel(name);   /* Update label */
+                m.setLabel(name.toString());   /* Update label */
             }
             //if(use3d) { /* If 3D? */
             m.setRangeY(top.getY(), bottom.getY());
             //}
             /* Set line and fill properties */
-            addStyle(name, world.getName(), m, plot);
+            addStyle(name.toString(), world.getName(), m, plot);
 
             /* Build popup */
             String desc = formatInfoWindow(plot);
@@ -187,7 +189,7 @@ public class DynmapPlotMe extends JavaPlugin {
         for (World w : getServer().getWorlds()) {
             BukkitWorld world = new BukkitWorld(w);
             if (PlotMeCoreManager.getInstance().isPlotWorld(world)) {
-                ConcurrentHashMap<String, Plot> plots = PlotMeCoreManager.getInstance().getMap(world).getLoadedPlots();
+                ConcurrentHashMap<PlotId, Plot> plots = PlotMeCoreManager.getInstance().getMap(world).getLoadedPlots();
 
                 for (Plot plot : plots.values()) {
                     handlePlot(w, plot, newmap);
@@ -309,15 +311,6 @@ public class DynmapPlotMe extends JavaPlugin {
         stop = false;
 
         getServer().getScheduler().scheduleSyncDelayedTask(this, new PlotMeUpdate(), 40);   /* First time is 2 seconds */
-    }
-
-    public void Disable() {
-        if (set != null) {
-            set.deleteMarkerSet();
-            set = null;
-        }
-        resareas.clear();
-        stop = true;
     }
 
     private static class AreaStyle {
