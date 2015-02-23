@@ -23,7 +23,11 @@ import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DynmapPlotMe extends JavaPlugin {
@@ -90,9 +94,7 @@ public class DynmapPlotMe extends JavaPlugin {
         if (as == null) {    /* Check for wildcard style matches */
             for (String wc : cuswildstyle.keySet()) {
                 String[] tok = wc.split("\\|");
-                if ((tok.length == 1) && plotid.startsWith(tok[0])) {
-                    as = cuswildstyle.get(wc);
-                } else if ((tok.length >= 2) && plotid.startsWith(tok[0]) && plotid.endsWith(tok[1])) {
+                if ((tok.length == 1) && plotid.startsWith(tok[0]) || (tok.length >= 2) && plotid.startsWith(tok[0]) && plotid.endsWith(tok[1])) {
                     as = cuswildstyle.get(wc);
                 }
             }
