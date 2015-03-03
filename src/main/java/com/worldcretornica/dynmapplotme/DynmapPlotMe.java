@@ -36,10 +36,9 @@ public class DynmapPlotMe extends JavaPlugin {
     private static final String DEF_INFOWINDOW = "<div class=\"infowindow\"><span style=\"font-size:120%;\">ID : %plotid%</span><br />" +
                                                  " Owner <span style=\"font-weight:bold;\">%plotowners%</span>%plothelpers%";
     private static MarkerSet set;
-    public PlotMe_CorePlugin plotme;
-    public MarkerAPI markerapi;
-    public Plugin dynmap;
-    public DynmapAPI api;
+    private PlotMe_CorePlugin plotme;
+    private Plugin dynmap;
+    private DynmapAPI api;
     private long updperiod;
     // private boolean use3d;
     private String infowindow;
@@ -53,7 +52,7 @@ public class DynmapPlotMe extends JavaPlugin {
     private Map<String, AreaMarker> resareas = new HashMap<>();
     private PlotMeCoreManager manager;
 
-    public void severe(String msg) {
+    private void severe(String msg) {
         getLogger().severe("[DynmapPlotMe] " + msg);
     }
 
@@ -118,11 +117,6 @@ public class DynmapPlotMe extends JavaPlugin {
         }
     }
 
-    /**
-     * @param world
-     * @param plot
-     * @param newmap
-     */
     private void handlePlot(World world, Plot plot, Map<String, AreaMarker> newmap) {
         PlotId name = plot.getId();
 
@@ -229,10 +223,10 @@ public class DynmapPlotMe extends JavaPlugin {
         }
     }
 
-    public void activate() {
+    private void activate() {
 
         /* Now, get markers API */
-        markerapi = api.getMarkerAPI();
+        MarkerAPI markerapi = api.getMarkerAPI();
         if (markerapi == null) {
             severe("Error loading dynmap marker API!");
             return;
@@ -309,11 +303,11 @@ public class DynmapPlotMe extends JavaPlugin {
 
     private static class AreaStyle {
 
-        String strokecolor;
-        double strokeopacity;
-        int strokeweight;
-        String fillcolor;
-        double fillopacity;
+        final String strokecolor;
+        final double strokeopacity;
+        final int strokeweight;
+        final String fillcolor;
+        final double fillopacity;
         String label;
 
         AreaStyle(FileConfiguration cfg, String path, AreaStyle def) {
