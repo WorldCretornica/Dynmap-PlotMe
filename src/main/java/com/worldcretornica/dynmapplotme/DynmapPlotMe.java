@@ -3,6 +3,7 @@ package com.worldcretornica.dynmapplotme;
 import com.worldcretornica.plotme_core.Plot;
 import com.worldcretornica.plotme_core.PlotId;
 import com.worldcretornica.plotme_core.PlotMeCoreManager;
+import com.worldcretornica.plotme_core.api.IWorld;
 import com.worldcretornica.plotme_core.bukkit.PlotMe_CorePlugin;
 import com.worldcretornica.plotme_core.bukkit.api.BukkitLocation;
 import com.worldcretornica.plotme_core.bukkit.api.BukkitWorld;
@@ -50,10 +51,7 @@ public class DynmapPlotMe extends JavaPlugin {
     private Set<String> hidden;
     private boolean stop;
     private Map<String, AreaMarker> resareas = new HashMap<>();
-
-    public void info(String msg) {
-        getLogger().info("[DynmapPlotMe] " + msg);
-    }
+    private PlotMeCoreManager manager;
 
     public void severe(String msg) {
         getLogger().severe("[DynmapPlotMe] " + msg);
@@ -72,21 +70,17 @@ public class DynmapPlotMe extends JavaPlugin {
     }
 
     private boolean isVisible(String id, String worldname) {
-        if ((visible != null) && (!visible.isEmpty())) {
-            if ((!visible.contains(id)) && (!visible.contains("world:" + worldname)) &&
-                (!visible.contains(worldname + "/" + id))) {
+        if (visible != null && !visible.isEmpty()) {
+            if (!visible.contains(id) && !visible.contains("world:" + worldname) &&
+                    !visible.contains(worldname + "/" + id)) {
                 return false;
             }
         }
-        if ((hidden != null) && (!hidden.isEmpty())) {
-            if (hidden.contains(id) || hidden.contains("world:" + worldname) || hidden.contains(worldname + "/" + id)) {
-                return false;
-            }
-        }
-        return true;
+        return !(hidden != null && !hidden.isEmpty() && (hidden.contains(id) || hidden.contains("world:" + worldname) || hidden
+                .contains(worldname + "/" + id)));
     }
 
-    private void addStyle(String plotid, String worldid, AreaMarker m, Plot plot) {
+    private void addStyle(String plotid, String worldid, AreaMarker marker, Plot plot) {
         AreaStyle as = cusstyle.get(worldid + "/" + plotid);
         if (as == null) {
             as = cusstyle.get(plotid);
@@ -94,7 +88,7 @@ public class DynmapPlotMe extends JavaPlugin {
         if (as == null) {    /* Check for wildcard style matches */
             for (String wc : cuswildstyle.keySet()) {
                 String[] tok = wc.split("\\|");
-                if ((tok.length == 1) && plotid.startsWith(tok[0]) || (tok.length >= 2) && plotid.startsWith(tok[0]) && plotid.endsWith(tok[1])) {
+                if (tok.length == 1 && plotid.startsWith(tok[0]) || tok.length >= 2 && plotid.startsWith(tok[0]) && plotid.endsWith(tok[1])) {
                     as = cuswildstyle.get(wc);
                 }
             }
@@ -116,11 +110,11 @@ public class DynmapPlotMe extends JavaPlugin {
             fc = Integer.parseInt(as.fillcolor.substring(1), 16);
         } catch (NumberFormatException ignored) {
         }
-        m.setLineStyle(as.strokeweight, as.strokeopacity, sc);
-        m.setFillStyle(as.fillopacity, fc);
+        marker.setLineStyle(as.strokeweight, as.strokeopacity, sc);
+        marker.setFillStyle(as.fillopacity, fc);
 
         if (as.label != null) {
-            m.setLabel(as.label);
+            marker.setLabel(as.label);
         }
     }
 
@@ -135,7 +129,6 @@ public class DynmapPlotMe extends JavaPlugin {
         /* Handle areas */
         if (isVisible(name.toString(), world.getName())) {
 
-            PlotMeCoreManager manager = PlotMeCoreManager.getInstance();
             Location bottom = ((BukkitLocation) manager.getPlotBottomLoc(new BukkitWorld(world), name)).getLocation();
             Location top = ((BukkitLocation) manager.getPlotTopLoc(new BukkitWorld(world), name)).getLocation();
 
@@ -157,44 +150,46 @@ public class DynmapPlotMe extends JavaPlugin {
             z[3] = bottom.getZ() - 2.0;
 
             String markerid = world.getName() + "_" + name;
-            AreaMarker m = resareas.remove(markerid); /* Existing area? */
-            if (m == null) {
-                m = set.createAreaMarker(markerid, name.toString(), false, world.getName(), x, z, false);
-                if (m == null) {
+            AreaMarker marker = resareas.remove(markerid); /* Existing area? */
+            if (marker == null) {
+                marker = set.createAreaMarker(markerid, name.toString(), false, world.getName(), x, z, false);
+                if (marker == null) {
                     return;
                 }
             } else {
-                m.setCornerLocations(x, z); /* Replace corner locations */
-                m.setLabel(name.toString());   /* Update label */
+                marker.setCornerLocations(x, z); /* Replace corner locations */
+                marker.setLabel(name.toString());   /* Update label */
             }
             //if(use3d) { /* If 3D? */
-            m.setRangeY(top.getY(), bottom.getY());
+            marker.setRangeY(top.getY(), bottom.getY());
             //}
             /* Set line and fill properties */
-            addStyle(name.toString(), world.getName(), m, plot);
+            addStyle(name.toString(), world.getName(), marker, plot);
 
             /* Build popup */
             String desc = formatInfoWindow(plot);
 
-            m.setDescription(desc); /* Set popup */
+            marker.setDescription(desc); /* Set popup */
 
             /* Add to map */
-            newmap.put(markerid, m);
+            newmap.put(markerid, marker);
         }
     }
+
+    /* Handle specific region */
 
     /* Update plotme information */
     private void updatePlots() {
         Map<String, AreaMarker> newmap = new HashMap<>(); /* Build new map */
 
         /* Loop through worlds */
-        for (World w : getServer().getWorlds()) {
-            BukkitWorld world = new BukkitWorld(w);
-            if (PlotMeCoreManager.getInstance().isPlotWorld(world)) {
-                ConcurrentHashMap<PlotId, Plot> plots = PlotMeCoreManager.getInstance().getMap(world).getLoadedPlots();
+        for (IWorld world1 : plotme.getAPI().getServerBridge().getWorlds()) {
+            BukkitWorld world = (BukkitWorld) world1;
+            if (manager.isPlotWorld(world)) {
+                ConcurrentHashMap<PlotId, Plot> plots = manager.getMap(world).getLoadedPlots();
 
                 for (Plot plot : plots.values()) {
-                    handlePlot(w, plot, newmap);
+                    handlePlot(world.getWorld(), plot, newmap);
                 }
             }
         }
@@ -207,12 +202,9 @@ public class DynmapPlotMe extends JavaPlugin {
 
         getServer().getScheduler().scheduleSyncDelayedTask(this, new PlotMeUpdate(), updperiod);
     }
-    
-    /* Handle specific region */
 
     @Override
     public void onEnable() {
-        info("initializing");
         PluginManager pm = getServer().getPluginManager();
         /* Get dynmap */
         dynmap = pm.getPlugin("dynmap");
@@ -228,7 +220,7 @@ public class DynmapPlotMe extends JavaPlugin {
             return;
         }
         plotme = (PlotMe_CorePlugin) p;
-
+        manager = PlotMeCoreManager.getInstance();
         getServer().getPluginManager().registerEvents(new OurServerListener(), this);
         /* If both enabled, activate */
 
@@ -309,7 +301,7 @@ public class DynmapPlotMe extends JavaPlugin {
         if (per < 15) {
             per = 15;
         }
-        updperiod = (long) (per * 20);
+        updperiod = per * 20;
         stop = false;
 
         getServer().getScheduler().scheduleSyncDelayedTask(this, new PlotMeUpdate(), 40);   /* First time is 2 seconds */
