@@ -52,10 +52,6 @@ public class DynmapPlotMe extends JavaPlugin {
     private Map<String, AreaMarker> resareas = new HashMap<>();
     private PlotMeCoreManager manager;
 
-    private void severe(String msg) {
-        getLogger().severe("[DynmapPlotMe] " + msg);
-    }
-
     private String formatInfoWindow(Plot plot) {
         String v = "<div class=\"plotinfo\">" + infowindow + "</div>";
         v = v.replace("%plotid%", plot.getId().toString());
@@ -200,20 +196,19 @@ public class DynmapPlotMe extends JavaPlugin {
     @Override
     public void onEnable() {
         PluginManager pm = getServer().getPluginManager();
-        /* Get dynmap */
+        // Find Dynmap
         dynmap = pm.getPlugin("dynmap");
         if (dynmap == null) {
-            severe("Cannot find dynmap!");
+            getLogger().severe("Cannot find dynmap!");
             return;
         }
         api = (DynmapAPI) dynmap; /* Get API */
-        /* Get WorldGuard */
-        Plugin p = pm.getPlugin("PlotMe");
-        if (p == null) {
-            severe("Cannot find PlotMe-Core!");
+        Plugin plugin = pm.getPlugin("PlotMe");
+        if (plugin == null) {
+            getLogger().severe("Cannot find PlotMe-Core!");
             return;
         }
-        plotme = (PlotMe_CorePlugin) p;
+        plotme = (PlotMe_CorePlugin) plugin;
         manager = PlotMeCoreManager.getInstance();
         getServer().getPluginManager().registerEvents(new OurServerListener(), this);
         /* If both enabled, activate */
@@ -228,7 +223,7 @@ public class DynmapPlotMe extends JavaPlugin {
         /* Now, get markers API */
         MarkerAPI markerapi = api.getMarkerAPI();
         if (markerapi == null) {
-            severe("Error loading dynmap marker API!");
+            getLogger().severe("Error loading dynmap marker API!");
             return;
         }
         /* Load configuration */
@@ -244,7 +239,7 @@ public class DynmapPlotMe extends JavaPlugin {
             set.setMarkerSetLabel(cfg.getString("layer.name", "PlotMe"));
         }
         if (set == null) {
-            severe("Error creating marker set");
+            getLogger().severe("Error creating marker set");
             return;
         }
         int minzoom = cfg.getInt("layer.minzoom", 0);
@@ -256,7 +251,7 @@ public class DynmapPlotMe extends JavaPlugin {
         //use3d = cfg.getBoolean("use3dregions", false);
         infowindow = cfg.getString("infowindow", DEF_INFOWINDOW);
 
-        /* Get style information */
+        // Get style information
         defstyle = new AreaStyle(cfg, "plotstyle");
         cusstyle = new HashMap<>();
         ownerstyle = new HashMap<>();
@@ -342,8 +337,8 @@ public class DynmapPlotMe extends JavaPlugin {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onPluginEnable(PluginEnableEvent event) {
-            Plugin p = event.getPlugin();
-            String name = p.getDescription().getName();
+            Plugin plugin = event.getPlugin();
+            String name = plugin.getDescription().getName();
             if (name.equals("dynmap")) {
                 if (dynmap.isEnabled() && plotme.isEnabled()) {
                     activate();
@@ -354,12 +349,12 @@ public class DynmapPlotMe extends JavaPlugin {
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onPlotEvent(PlotEvent event) {
             Plot plot = event.getPlot();
-            World w = event.getWorld();
+            World world = event.getWorld();
 
-            if (plot != null && w != null) {
+            if (plot != null && world != null) {
                 Map<String, AreaMarker> newmap = new HashMap<>();
 
-                handlePlot(w, plot, newmap);
+                handlePlot(world, plot, newmap);
             }
         }
     }
