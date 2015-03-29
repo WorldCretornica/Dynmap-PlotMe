@@ -122,7 +122,7 @@ public class DynmapPlotMe extends JavaPlugin {
             Location bottom = ((BukkitLocation) manager.getPlotBottomLoc(new BukkitWorld(world), name)).getLocation();
             Location top = ((BukkitLocation) manager.getPlotTopLoc(new BukkitWorld(world), name)).getLocation();
 
-            int roadheight = plotme.getAPI().getGenManager(world.getName()).getRoadHeight();
+            int roadheight = plotme.getAPI().getGenManager(world.getName()).getGroundHeight();
 
             bottom.setY(roadheight);
             top.setY(roadheight);
