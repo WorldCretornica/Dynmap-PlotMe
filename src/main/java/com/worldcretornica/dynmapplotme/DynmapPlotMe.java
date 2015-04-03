@@ -4,12 +4,11 @@ import com.worldcretornica.plotme_core.Plot;
 import com.worldcretornica.plotme_core.PlotId;
 import com.worldcretornica.plotme_core.PlotMeCoreManager;
 import com.worldcretornica.plotme_core.api.IWorld;
+import com.worldcretornica.plotme_core.api.event.InternalPlotEvent;
 import com.worldcretornica.plotme_core.bukkit.PlotMe_CorePlugin;
 import com.worldcretornica.plotme_core.bukkit.api.BukkitLocation;
 import com.worldcretornica.plotme_core.bukkit.api.BukkitWorld;
-import com.worldcretornica.plotme_core.bukkit.event.PlotEvent;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
@@ -56,10 +55,10 @@ public class DynmapPlotMe extends JavaPlugin {
         String v = "<div class=\"plotinfo\">" + infowindow + "</div>";
         v = v.replace("%plotid%", plot.getId().toString());
         v = v.replace("%plotowners%", plot.getOwner());
-        if (plot.getAllowed().isEmpty()) {
+        if (plot.allowed().isEmpty()) {
             v = v.replace("%plothelpers%", "");
         } else {
-            v = v.replace("%plothelpers%", "<br />Helpers <span style=\"font-weight:bold;\">" + plot.getAllowed() + "</span></div>");
+            v = v.replace("%plothelpers%", "<br />Helpers <span style=\"font-weight:bold;\">" + plot.allowed() + "</span></div>");
         }
         return v;
     }
@@ -113,14 +112,14 @@ public class DynmapPlotMe extends JavaPlugin {
         }
     }
 
-    private void handlePlot(World world, Plot plot, Map<String, AreaMarker> newmap) {
+    private void handlePlot(IWorld world, Plot plot, Map<String, AreaMarker> newmap) {
         PlotId name = plot.getId();
 
         /* Handle areas */
         if (isVisible(name.toString(), world.getName())) {
 
-            Location bottom = ((BukkitLocation) manager.getPlotBottomLoc(new BukkitWorld(world), name)).getLocation();
-            Location top = ((BukkitLocation) manager.getPlotTopLoc(new BukkitWorld(world), name)).getLocation();
+            Location bottom = ((BukkitLocation) manager.getPlotBottomLoc(world, name)).getLocation();
+            Location top = ((BukkitLocation) manager.getPlotTopLoc(world, name)).getLocation();
 
             int roadheight = plotme.getAPI().getGenManager(world.getName()).getGroundHeight();
 
@@ -179,7 +178,7 @@ public class DynmapPlotMe extends JavaPlugin {
                 ConcurrentHashMap<PlotId, Plot> plots = manager.getMap(world).getLoadedPlots();
 
                 for (Plot plot : plots.values()) {
-                    handlePlot(world.getWorld(), plot, newmap);
+                    handlePlot(world, plot, newmap);
                 }
             }
         }
@@ -347,9 +346,9 @@ public class DynmapPlotMe extends JavaPlugin {
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onPlotEvent(PlotEvent event) {
+        public void onPlotEvent(InternalPlotEvent event) {
             Plot plot = event.getPlot();
-            World world = event.getWorld();
+            IWorld world = event.getWorld();
 
             if (plot != null && world != null) {
                 Map<String, AreaMarker> newmap = new HashMap<>();
