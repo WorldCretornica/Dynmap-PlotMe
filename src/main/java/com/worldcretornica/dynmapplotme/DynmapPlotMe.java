@@ -5,16 +5,15 @@ import com.worldcretornica.plotme_core.PlotId;
 import com.worldcretornica.plotme_core.PlotMeCoreManager;
 import com.worldcretornica.plotme_core.api.IWorld;
 import com.worldcretornica.plotme_core.api.event.InternalPlotEvent;
+import com.worldcretornica.plotme_core.api.event.eventbus.Order;
+import com.worldcretornica.plotme_core.api.event.eventbus.Subscribe;
 import com.worldcretornica.plotme_core.bukkit.PlotMe_CorePlugin;
 import com.worldcretornica.plotme_core.bukkit.api.BukkitLocation;
 import com.worldcretornica.plotme_core.bukkit.api.BukkitWorld;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,10 +32,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DynmapPlotMe extends JavaPlugin {
 
     private static final String DEF_INFOWINDOW = "<div class=\"infowindow\"><span style=\"font-size:120%;\">ID : %plotid%</span><br />" +
-                                                 " Owner <span style=\"font-weight:bold;\">%plotowners%</span>%plothelpers%";
+            " Owner <span style=\"font-weight:bold;\">%plotowners%</span>%plothelpers%";
     private static MarkerSet set;
     private PlotMe_CorePlugin plotme;
-    private Plugin dynmap;
     private DynmapAPI api;
     private long updperiod;
     // private boolean use3d;
@@ -196,7 +194,7 @@ public class DynmapPlotMe extends JavaPlugin {
     public void onEnable() {
         PluginManager pm = getServer().getPluginManager();
         // Find Dynmap
-        dynmap = pm.getPlugin("dynmap");
+        Plugin dynmap = pm.getPlugin("dynmap");
         if (dynmap == null) {
             getLogger().severe("Cannot find dynmap!");
             return;
@@ -334,18 +332,7 @@ public class DynmapPlotMe extends JavaPlugin {
 
     private class OurServerListener implements Listener {
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onPluginEnable(PluginEnableEvent event) {
-            Plugin plugin = event.getPlugin();
-            String name = plugin.getDescription().getName();
-            if (name.equals("dynmap")) {
-                if (dynmap.isEnabled() && plotme.isEnabled()) {
-                    activate();
-                }
-            }
-        }
-
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        @Subscribe(order = Order.EARLY)
         public void onPlotEvent(InternalPlotEvent event) {
             Plot plot = event.getPlot();
             IWorld world = event.getWorld();
