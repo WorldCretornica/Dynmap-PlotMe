@@ -3,14 +3,13 @@ package com.worldcretornica.dynmapplotme;
 import com.worldcretornica.plotme_core.Plot;
 import com.worldcretornica.plotme_core.PlotId;
 import com.worldcretornica.plotme_core.PlotMeCoreManager;
+import com.worldcretornica.plotme_core.api.ILocation;
 import com.worldcretornica.plotme_core.api.IWorld;
 import com.worldcretornica.plotme_core.api.event.InternalPlotEvent;
 import com.worldcretornica.plotme_core.api.event.eventbus.Order;
 import com.worldcretornica.plotme_core.api.event.eventbus.Subscribe;
 import com.worldcretornica.plotme_core.bukkit.PlotMe_CorePlugin;
-import com.worldcretornica.plotme_core.bukkit.api.BukkitLocation;
 import com.worldcretornica.plotme_core.bukkit.api.BukkitWorld;
-import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
@@ -116,8 +115,8 @@ public class DynmapPlotMe extends JavaPlugin {
         /* Handle areas */
         if (isVisible(name.toString(), world.getName())) {
 
-            Location bottom = ((BukkitLocation) manager.getPlotBottomLoc(world, name)).getLocation();
-            Location top = ((BukkitLocation) manager.getPlotTopLoc(world, name)).getLocation();
+            ILocation bottom = manager.getPlotBottomLoc(name);
+            ILocation top = manager.getPlotTopLoc(name);
 
             int roadheight = plotme.getAPI().getGenManager(world.getName()).getGroundHeight();
 
