@@ -52,10 +52,10 @@ public class DynmapPlotMe extends JavaPlugin {
         String v = "<div class=\"plotinfo\">" + infowindow + "</div>";
         v = v.replace("%plotid%", plot.getId().toString());
         v = v.replace("%plotowners%", plot.getOwner());
-        if (plot.allowed().isEmpty()) {
+        if (plot.getAllowed().isEmpty()) {
             v = v.replace("%plothelpers%", "");
         } else {
-            v = v.replace("%plothelpers%", "<br />Helpers <span style=\"font-weight:bold;\">" + plot.allowed() + "</span></div>");
+            v = v.replace("%plothelpers%", "<br />Helpers <span style=\"font-weight:bold;\">" + plot.getAllowed() + "</span></div>");
         }
         return v;
     }
