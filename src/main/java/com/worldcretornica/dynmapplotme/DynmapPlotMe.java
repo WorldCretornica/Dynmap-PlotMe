@@ -5,7 +5,7 @@ import com.worldcretornica.plotme_core.PlotId;
 import com.worldcretornica.plotme_core.PlotMeCoreManager;
 import com.worldcretornica.plotme_core.api.ILocation;
 import com.worldcretornica.plotme_core.api.IWorld;
-import com.worldcretornica.plotme_core.api.event.InternalPlotEvent;
+import com.worldcretornica.plotme_core.api.event.PlotEvent;
 import com.worldcretornica.plotme_core.api.event.eventbus.Order;
 import com.worldcretornica.plotme_core.api.event.eventbus.Subscribe;
 import com.worldcretornica.plotme_core.bukkit.PlotMe_CorePlugin;
@@ -332,7 +332,7 @@ public class DynmapPlotMe extends JavaPlugin {
     private class OurServerListener implements Listener {
 
         @Subscribe(order = Order.EARLY)
-        public void onPlotEvent(InternalPlotEvent event) {
+        public void onPlotEvent(PlotEvent event) {
             Plot plot = event.getPlot();
             IWorld world = event.getWorld();
 
