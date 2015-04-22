@@ -115,10 +115,10 @@ public class DynmapPlotMe extends JavaPlugin {
         /* Handle areas */
         if (isVisible(name.toString(), world.getName())) {
 
-            ILocation bottom = manager.getPlotBottomLoc(name);
-            ILocation top = manager.getPlotTopLoc(name);
+            ILocation bottom = manager.getPlotBottomLoc(world, name);
+            ILocation top = manager.getPlotTopLoc(world, name);
 
-            int roadheight = plotme.getAPI().getGenManager(world.getName()).getGroundHeight();
+            int roadheight = plotme.getAPI().getGenManager(world).getGroundHeight();
 
             bottom.setY(roadheight);
             top.setY(roadheight);
