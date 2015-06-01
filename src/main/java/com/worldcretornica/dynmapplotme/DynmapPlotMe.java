@@ -33,7 +33,7 @@ public class DynmapPlotMe extends JavaPlugin {
     private static final String DEF_INFOWINDOW = "<div class=\"infowindow\"><span style=\"font-size:120%;\">ID : %plotid%</span><br />" +
             " Owner <span style=\"font-weight:bold;\">%plotowners%</span>%plothelpers%";
     private static MarkerSet set;
-    private PlotMe_CorePlugin plotme;
+    private final PlotMe_CorePlugin plotme = PlotMe_CorePlugin.getInstance();
     private DynmapAPI api;
     private long updperiod;
     // private boolean use3d;
@@ -46,7 +46,7 @@ public class DynmapPlotMe extends JavaPlugin {
     private Set<String> hidden;
     private boolean stop;
     private Map<String, AreaMarker> resareas = new HashMap<>();
-    private PlotMeCoreManager manager;
+    private PlotMeCoreManager manager = PlotMeCoreManager.getInstance();
 
     private String formatInfoWindow(Plot plot) {
         String v = "<div class=\"plotinfo\">" + infowindow + "</div>";
@@ -204,7 +204,6 @@ public class DynmapPlotMe extends JavaPlugin {
             getLogger().severe("Cannot find PlotMe-Core!");
             return;
         }
-        plotme = (PlotMe_CorePlugin) plugin;
         manager = PlotMeCoreManager.getInstance();
         getServer().getPluginManager().registerEvents(new OurServerListener(), this);
         /* If both enabled, activate */
