@@ -3,8 +3,8 @@ package com.worldcretornica.dynmapplotme;
 import com.worldcretornica.plotme_core.Plot;
 import com.worldcretornica.plotme_core.PlotId;
 import com.worldcretornica.plotme_core.PlotMeCoreManager;
-import com.worldcretornica.plotme_core.api.ILocation;
 import com.worldcretornica.plotme_core.api.IWorld;
+import com.worldcretornica.plotme_core.api.Vector;
 import com.worldcretornica.plotme_core.api.event.PlotEvent;
 import com.worldcretornica.plotme_core.api.event.eventbus.Order;
 import com.worldcretornica.plotme_core.api.event.eventbus.Subscribe;
@@ -21,12 +21,12 @@ import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class DynmapPlotMe extends JavaPlugin {
 
@@ -115,8 +115,8 @@ public class DynmapPlotMe extends JavaPlugin {
         /* Handle areas */
         if (isVisible(name.toString(), world.getName())) {
 
-            ILocation bottom = manager.getPlotBottomLoc(world, name);
-            ILocation top = manager.getPlotTopLoc(world, name);
+            Vector bottom = manager.getPlotBottomLoc(world, name);
+            Vector top = manager.getPlotTopLoc(world, name);
 
             int roadheight = plotme.getAPI().getGenManager(world).getGroundHeight();
 
@@ -172,9 +172,9 @@ public class DynmapPlotMe extends JavaPlugin {
         for (IWorld world1 : plotme.getAPI().getServerBridge().getWorlds()) {
             BukkitWorld world = (BukkitWorld) world1;
             if (manager.isPlotWorld(world)) {
-                ConcurrentHashMap<PlotId, Plot> plots = manager.getMap(world).getLoadedPlots();
+                ArrayList<Plot> plots = plotme.getAPI().getSqlManager().plots;
 
-                for (Plot plot : plots.values()) {
+                for (Plot plot : plots) {
                     handlePlot(world, plot, newmap);
                 }
             }
