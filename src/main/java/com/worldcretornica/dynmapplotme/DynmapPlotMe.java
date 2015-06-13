@@ -4,7 +4,6 @@ import com.worldcretornica.plotme_core.Plot;
 import com.worldcretornica.plotme_core.PlotId;
 import com.worldcretornica.plotme_core.PlotMeCoreManager;
 import com.worldcretornica.plotme_core.api.IWorld;
-import com.worldcretornica.plotme_core.api.Vector;
 import com.worldcretornica.plotme_core.api.event.PlotEvent;
 import com.worldcretornica.plotme_core.api.event.eventbus.Order;
 import com.worldcretornica.plotme_core.api.event.eventbus.Subscribe;
@@ -21,7 +20,7 @@ import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -115,25 +114,19 @@ public class DynmapPlotMe extends JavaPlugin {
         /* Handle areas */
         if (isVisible(name.toString(), world.getName())) {
 
-            Vector bottom = manager.getPlotBottomLoc(world, name);
-            Vector top = manager.getPlotTopLoc(world, name);
-
             int roadheight = plotme.getAPI().getGenManager(world).getGroundHeight();
-
-            bottom.setY(roadheight);
-            top.setY(roadheight);
 
             /* Make outline */
             double[] x = new double[4];
             double[] z = new double[4];
-            x[0] = bottom.getX() - 2.0;
-            z[0] = bottom.getZ() - 2.0;
-            x[1] = bottom.getX() - 2.0;
-            z[1] = top.getZ() + 2.0;
-            x[2] = top.getX() + 2.0;
-            z[2] = top.getZ() + 2.0;
-            x[3] = top.getX() + 2.0;
-            z[3] = bottom.getZ() - 2.0;
+            x[0] = plot.getBottomX() - 2.0;
+            z[0] = plot.getBottomZ() - 2.0;
+            x[1] = plot.getBottomX() - 2.0;
+            z[1] = plot.getTopZ() + 2.0;
+            x[2] = plot.getTopX() + 2.0;
+            z[2] = plot.getTopZ() + 2.0;
+            x[3] = plot.getTopX() + 2.0;
+            z[3] = plot.getBottomZ() - 2.0;
 
             String markerid = world.getName() + "_" + name;
             AreaMarker marker = resareas.remove(markerid); /* Existing area? */
@@ -147,7 +140,7 @@ public class DynmapPlotMe extends JavaPlugin {
                 marker.setLabel(name.toString());   /* Update label */
             }
             //if(use3d) { /* If 3D? */
-            marker.setRangeY(top.getY(), bottom.getY());
+            marker.setRangeY(roadheight, roadheight);
             //}
             /* Set line and fill properties */
             addStyle(name.toString(), world.getName(), marker, plot);
@@ -172,7 +165,7 @@ public class DynmapPlotMe extends JavaPlugin {
         for (IWorld world1 : plotme.getAPI().getServerBridge().getWorlds()) {
             BukkitWorld world = (BukkitWorld) world1;
             if (manager.isPlotWorld(world)) {
-                ArrayList<Plot> plots = plotme.getAPI().getSqlManager().plots;
+                Collection<Plot> plots = plotme.getAPI().getSqlManager().worldToPlotMap.get(world);
 
                 for (Plot plot : plots) {
                     handlePlot(world, plot, newmap);
