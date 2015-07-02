@@ -20,7 +20,6 @@ import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -165,11 +164,11 @@ public class DynmapPlotMe extends JavaPlugin {
         for (IWorld world1 : plotme.getAPI().getServerBridge().getWorlds()) {
             BukkitWorld world = (BukkitWorld) world1;
             if (manager.isPlotWorld(world)) {
-                Collection<Plot> plots = plotme.getAPI().getSqlManager().worldToPlotMap.get(world);
+                //Collection<Plot> plots = plotme.getAPI().getSqlManager().worldToPlotMap.get(world);
 
-                for (Plot plot : plots) {
-                    handlePlot(world, plot, newmap);
-                }
+                //for (Plot plot : plots) {
+                //    handlePlot(world, plot, newmap);
+                //}
             }
         }
         /* Now, review old map - anything left is gone */
